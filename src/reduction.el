@@ -1,5 +1,7 @@
 ;; Everything related to beta substitution and reduction of terms
 
+(load "utilities.el")
+
 ;; Perform beta substitution on the subexpression of SUPER-SEXP located by PATH.
 (defun beta-substitute-at-path (super-sexp path)
   "Perform beta substitution on the subexpression of SUPER-SEXP located by PATH.
@@ -62,9 +64,14 @@ PATH is a list of indices locating the subexpression to reduce."
            (var (nth 1 rator))
            (_type (nth 2 rator))
            (body (nth 3 rator))
-           (arg (cadr term))
-           (substituted (substitute-in-term body var arg)))
-      (beta-substitute-all-in-term substituted)))
+           (arg (cadr term)))
+      ;; Only perform beta substitution if the argument doesn't contain multiple OR expressions
+      (if (and (has-at-least-one-or-expression arg) (multiple-variable-fun rator))
+          (list
+           (list 'FUN var _type (beta-substitute-all-in-term body))
+           (beta-substitute-all-in-term arg))
+        (let ((substituted (substitute-in-term body var arg)))
+          (beta-substitute-all-in-term substituted)))))
    ;; Application or other list: recursively substitute in all subterms - include the (y f) case where we reduce only f
    ((listp term)
     (mapcar #'beta-substitute-all-in-term term))

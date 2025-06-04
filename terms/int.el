@@ -36,8 +36,8 @@
 			     (FUN succ-case (FUN n top top)
 				  'zero-case)))))))))
 
-;;;;;;;;;;;;;;;;;;
-;; Basic functions
+;; ;;;;;;;;;;;;;;;;;;
+;; ;; Basic functions
 
 (define-term
  '*succ*
@@ -102,12 +102,69 @@
  '*fact*
  '(*fact-factory* (FUN a *int* *int*)))
 
-;; Todo provide a proper definition,
-;; These are just placeholders which generalise to *bool* to showcase the syracuse example
+;; Less than or equal to
+(define-term
+ '*leq-factory*
+ '(FUN obj top
+       (y (FUN self 'obj
+	       (FUN m *int*
+		    (FUN n *int*
+			 (('m
+			   ;; m == 0 -> true
+			   *true*)
+			  ;; m == S(a)
+			  (FUN a *int*
+			       (('n
+				 ;; n == 0 -> false
+				 *false*)
+				;; n == S(b) -> a <= b
+				(FUN b *int*
+				     (('self 'a) 'b)))))))))))
+
+(define-term
+ '*leq*
+ '(*leq-factory*
+   (FUN a *int* (FUN b *int* *bool*))))
+
+
+;; Greater than or equal to
+(define-term
+ '*geq-factory*
+ '(FUN obj top
+       (y (FUN self 'obj
+	       (FUN m *int*
+		    (FUN n *int*
+			 (('m
+			   ;; m == 0 -> false
+			   *false*)
+			  ;; m == S(a)
+			  (FUN a *int*
+			       (('n
+				 ;; n == 0 -> true
+				 *true*)
+				;; n == S(b) -> a >= b
+				(FUN b *int*
+				     (('self 'a) 'b)))))))))))
+
+(define-term
+ '*geq*
+ '(*geq-factory*
+   (FUN a *int* (FUN b *int* *bool*))))
+
+;; Maximum of two integers
+(define-term
+ '*max*
+ '(FUN a *int*
+       (FUN b *int*
+	    ((*geq* 'a 'b) 'a 'b))))
+
+;; These are just placeholders to showcase the syracuse example
 (define-term '*isOne*
 	     '(FUN n *int* *bool*))
 (define-term '*isEven*
 	     '(FUN n *int* *bool*))
+(define-term '*div*
+	     '(FUN n *int* (FUN m *int* *int*)))
 
 ;; Syracuse function
 (define-term

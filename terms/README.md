@@ -6,6 +6,7 @@ This directory contains the definitions of core lambda calculus terms and type c
 
 - **bool.el**: Boolean type definitions and operations using Scott encoding
 - **int.el**: Integer type definitions and arithmetic operations using Scott encoding
+- **lisp.el**: List type definitions and operations using Scott encoding
 
 ## Scott Encoding
 

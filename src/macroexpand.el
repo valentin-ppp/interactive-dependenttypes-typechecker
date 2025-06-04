@@ -62,3 +62,23 @@ Adds (NAME . DEFINITION) to *term-definitions*, replacing any existing entry for
   (message "Defined term: %S" name)
   ;; Return the name, similar to defun/defmacro convention
   name)
+
+;; Recursively expand the symbols of *term-definitions*
+(defun macro-expand-term (term)
+  "Recursively expands term if it is a symbol defined in *term-definitions*."
+  (let ((visited nil) ; Prevent infinite loops for cyclic definitions
+        (current-term term)
+        (continue-loop t)) ; Control variable for the loop
+    (while continue-loop ; Loop while continue-loop is true
+      (let* ((is-symbol (symbolp current-term))
+             (not-visited (not (member current-term visited)))
+             (definition (and is-symbol not-visited (assoc current-term *term-definitions*))))
+        (if definition
+            (progn
+              (push current-term visited)
+              (setq current-term (cdr definition)))
+          ;; No definition found or already visited or not a symbol, stop looping
+          (setq continue-loop nil) ; Signal to exit the loop
+          )))
+    ;; Return the final state of current-term after the loop finishes
+    current-term))

@@ -1,31 +1,11 @@
 ;; Compile a term - generate proof obligations that once satisfied ensures the term is wellformed and can be executed
 
-;; Recursively expand the symbols of *term-definitions* (term of our calculus, defined in macroexpand.el) of a term
-(defun pss-expand-term (term)
-  "Recursively expands term if it is a symbol defined in *term-definitions*."
-  (let ((visited nil) ; Prevent infinite loops for cyclic definitions
-        (current-term term)
-        (continue-loop t)) ; Control variable for the loop
-    (while continue-loop ; Loop while continue-loop is true
-      (let* ((is-symbol (symbolp current-term))
-             (not-visited (not (member current-term visited)))
-             (definition (and is-symbol not-visited (assoc current-term *term-definitions*))))
-        (if definition
-            (progn
-              (push current-term visited)
-              (setq current-term (cdr definition)))
-          ;; No definition found or already visited or not a symbol, stop looping
-          (setq continue-loop nil) ; Signal to exit the loop
-          )))
-    ;; Return the final state of current-term after the loop finishes
-    current-term))
-
 ;; PO = proof obligation
 ;; Takes a term, and generate a list of POs
 (defun pss-compile-term (term &optional env)
   "Recursively compile a term and return a list of proof obligations, using an environment."
   ;; First expand any symbols in the term
-  (let ((expanded-term (pss-expand-term term)))
+  (let ((expanded-term (macro-expand-term term)))
     (cond
      ;; Special form: (y body) - Compile body only, ignore 'y' itself
      ((and (consp expanded-term) (eq (car expanded-term) 'y) (= (length expanded-term) 2))
@@ -78,7 +58,7 @@
           (setf all-pos (append all-pos (pss-compile-term arg env)))
 
           ;; 2b. Expand the current operator (which might be the result of previous application)
-          (let ((resolved-op (pss-expand-term current-op)))
+          (let ((resolved-op (macro-expand-term current-op)))
 
             ;; 2c. Check the type of the resolved operator and process the application step
             (cond
@@ -106,7 +86,7 @@
              (t
               (setf all-pos (append all-pos (list
 					     '()
-					     (list env resolved-op 'FUN-XXX)
+					     (list env resolved-op '(FUN x XXX top))
 					     (list env arg 'XXX)
 					     '()
 					     ))))

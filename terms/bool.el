@@ -15,3 +15,15 @@
 (define-term
  '*bool*
  '(OR *true* *false*))
+
+(define-term
+ '*and*
+ '(FUN a *bool*
+       (FUN b *bool*
+            (('a 'b) *false*))))
+
+(define-term
+ '*not*
+ '(FUN b *bool*
+       (('b *false*) *true*
+        ('b *true*) *false*)))

@@ -24,14 +24,21 @@ First, add the following to your `.emacs` file:
 ### Compiling a term
 
 1. Open the desired example file, for instance `examples/compilation/int.el`
-2. Use `proof-mode-compile` (C-c S) on a compilable term (`(<=-compile term)`)
+2. Use `proof-mode-compile` (C-c S) on a compilable term: `(<=-compile term)`
 3. Examine the generated proof obligations in the resulting buffer
 4. Choose a proof obligation, and follow the next section
 
 ### Proving a proof obligation
 
 1. Open the desired example file, for instance `examples/subtyping/int.el`
-2. Use `proof-mode-start-subtype-proof` (C-c s) on a proof obligation (`(<=p term-a term-b)`)
-3. Apply tactics using the defined keybindings (see src/interactive/all-binds.el)
+2. Use `proof-mode-start-subtype-proof` (C-c s) on a proof obligation: `(<=p term-a term-b)`
+3. Apply tactics using the defined keybindings (see `src/interactive/all-binds.el`)
 
 For more details on specific components, see the README files in each subdirectory.
+
+### Terms of our calculus
+
+variable ::= <<any lisp symbol, not in reserved-symbols>>
+reserved-symbols ::= 'OR | 'y
+
+term ::= top | 'variable | (term term) | (FUN variable term term) | (OR term term) | (y term)

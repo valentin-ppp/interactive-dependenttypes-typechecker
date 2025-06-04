@@ -6,6 +6,6 @@
 ;; *0* <= top
 (<=-compile (*0* *0*))
 
-;; (<=p 'm FUN XXX)
-;; (<=p XXX 'm)
+;; (<=p 'm (FUN t XXX top))
+;; (<=p 'm XXX)
 (<=-compile ('m 'm))
